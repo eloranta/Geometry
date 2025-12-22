@@ -8,13 +8,6 @@ Canvas::Canvas(QWidget *parent)
     updateTransform();
 }
 
-void Canvas::mousePressEvent(QMouseEvent *event) {
-    QPointF point = screenToCanvas(event->position());
-
-    qDebug() << point;
-    QWidget::mousePressEvent(event);
-}
-
 void Canvas::resizeEvent(QResizeEvent *event)
 {
     updateTransform();
@@ -33,4 +26,18 @@ void Canvas::updateTransform()
     }
     scale = std::min(area.width(), area.height()) / span;
     origin = QPointF(area.left() + area.width() / 2.0, area.top() + area.height() / 2.0);
+}
+
+void Canvas::paintEvent(QPaintEvent *event) {
+    QWidget::paintEvent(event);
+    qDebug() << "paint";
+
+}
+
+void Canvas::mousePressEvent(QMouseEvent *event) {
+    QPointF point = screenToCanvas(event->position());
+    qDebug() << point;
+    points.append(point);
+    update();
+    QWidget::mousePressEvent(event);
 }
