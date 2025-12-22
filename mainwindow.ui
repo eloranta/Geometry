@@ -18,7 +18,7 @@
     <item row="0" column="0">
      <widget class="Canvas" name="canvas">
       <property name="styleSheet">
-       <string notr="true">background-color: rgb(170, 255, 127);</string>
+       <string notr="true">background-color: lightgray;</string>
       </property>
      </widget>
     </item>
