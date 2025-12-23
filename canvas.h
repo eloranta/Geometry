@@ -21,11 +21,11 @@ private:
         virtual void Paint(QPainter &) { qDebug() << "Object::Paint"; }
     };
     struct Point : public Object {
-        QPointF positiom;
-        Point(const QPointF &point, bool select, const QString &label = "") : Object(select, label), positiom(point) {}
+        QPointF position;
+        Point(const QPointF &point, bool select, const QString &label = "") : Object(select, label), position(point) {}
         void Paint(QPainter &painter) override {
             const double radiusPixels = 4.0;
-            QPointF mapped = CanvasToScreen(positiom);
+            QPointF mapped = canvasToScreen(position);
             painter.setBrush(selected ? Qt::yellow : Qt::red);
             painter.setPen(QPen(selected ? Qt::darkYellow : Qt::red, selected ? 3 : 2));
             painter.drawEllipse(mapped, selected ? radiusPixels + 2 : radiusPixels, selected ? radiusPixels + 2 : radiusPixels);
@@ -60,14 +60,16 @@ private:
     static QPointF origin;
     void updateTransform();
 
-    QVector<Object *> points;
+    QVector<Object *> objects;
 
-    static QPointF CanvasToScreen(const QPointF &point){
+    static QPointF canvasToScreen(const QPointF &point){
         return QPointF(origin.x() + point.x() * scale, origin.y() - point.y() * scale);
     };
     static QPointF screenToCanvas(const QPointF &point){
         return QPointF((point.x() - origin.x()) / scale, -(point.y() - origin.y()) / scale);
     };
+
+    int getHitPoint(QMouseEvent *event);
 
 signals:
 };

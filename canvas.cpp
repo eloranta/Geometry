@@ -33,27 +33,76 @@ void Canvas::paintEvent(QPaintEvent *event) {
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing, true);
 
-    for (int i = 0; i < points.size(); ++i) {
-        points[i]->Paint(painter);
+    for (int i = 0; i < objects.size(); ++i) {
+        objects[i]->Paint(painter);
     }
+}
+
+int Canvas::getHitPoint(QMouseEvent *event)
+{
+    int hitPoint = -1;
+    double bestDist2 = std::numeric_limits<double>::max();
+    const double tolerancePx = 8.0;
+    const double tol2 = tolerancePx * tolerancePx;
+    for (int i = 0; i < objects.size(); ++i) {
+        QPointF screen = canvasToScreen(((Point *)objects[i])->position); // TODO:
+        double dx = screen.x() - event->position().x();
+        double dy = screen.y() - event->position().y();
+        double d2 = dx * dx + dy * dy;
+        if (d2 <= tol2 && d2 < bestDist2) {
+            bestDist2 = d2;
+            hitPoint = i;
+        }
+    }
+
+    return hitPoint;
 }
 
 void Canvas::mousePressEvent(QMouseEvent *event) {
     bool ctrl = event->modifiers().testFlag(Qt::ControlModifier);
     bool shift = event->modifiers().testFlag(Qt::ShiftModifier);
 
-    if (shift && ctrl){
-    }
-    else if (shift){
+    int hitPoint = getHitPoint(event);
+
+    if (shift && ctrl) {
+        if (hitPoint >= 0)
+            return;
         Point *point = new Point(screenToCanvas(event->position()), true);
-        points.append(point);
+        objects.append(point);
         update();
     }
-    else if (ctrl){
-
+    else if (shift){
+        if (hitPoint >= 0)
+            return;
+        for (int i = 0; i < objects.size(); ++i) {
+            objects[i]->selected = false;
+        }
+        Point *point = new Point(screenToCanvas(event->position()), true);
+        objects.append(point);
+        update();
     }
-    else{
-
+    else if (ctrl) {
+        if (hitPoint >= 0) {
+                objects[hitPoint]->selected = true;
+            update();
+        }
+    }
+    else {
+        if (hitPoint >= 0) {
+            for (int i = 0; i < objects.size(); ++i) {
+                if (i == hitPoint)
+                    objects[i]->selected = !objects[i]->selected;
+                else
+                    objects[i]->selected = false;
+            }
+            update();
+        }
+        else{
+            for (int i = 0; i < objects.size(); ++i) {
+                objects[i]->selected = false;
+            }
+            update();
+        }
     }
 
     QWidget::mousePressEvent(event);
