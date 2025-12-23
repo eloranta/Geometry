@@ -1,4 +1,5 @@
 #include <QMouseEvent>
+#include <algorithm>
 #include <memory>
 #include "canvas.h"
 
@@ -108,10 +109,21 @@ void Canvas::mousePressEvent(QMouseEvent *event) {
 }
 
 void Canvas::onDelete(){
-    qDebug() << "onDelete";
+    // move all elements that should stay to the front
+    const auto it = std::remove_if(objects.begin(), objects.end(),
+        [](const std::unique_ptr<Object> &obj) {
+            return obj && obj->selected;
+        });
+    // delete the trailing elements
+    if (it != objects.end()) {
+        objects.erase(it, objects.end());
+        update();
+    }
 }
 
 void Canvas::onDeleteAll(){
-    qDebug() << "onDeleteAll";
-
+    if (!objects.empty()) {
+        objects.clear();
+        update();
+    }
 }
