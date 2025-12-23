@@ -19,5 +19,7 @@ public:
 
 private:
     Ui::MainWindow *ui;
+    void onDeleteClicked();
+    void onDeleteAllClicked();
 };
 #endif // MAINWINDOW_H
