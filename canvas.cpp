@@ -1,6 +1,8 @@
 #include <QMouseEvent>
-#include <QPainter>
 #include "canvas.h"
+
+double Canvas::scale;
+QPointF Canvas::origin;
 
 Canvas::Canvas(QWidget *parent) : QWidget{parent}{
     setAttribute(Qt::WA_StyledBackground, true);
@@ -31,19 +33,14 @@ void Canvas::paintEvent(QPaintEvent *event) {
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing, true);
 
-    const double radiusPixels = 4.0;
     for (int i = 0; i < points.size(); ++i) {
-        const auto &entry = points[i];
-        QPointF mapped = CanvasToScreen(entry);
-        painter.setBrush(Qt::red);
-        painter.setPen(QPen(Qt::red, 2));
-        painter.drawEllipse(mapped, radiusPixels, radiusPixels);
-        }
+        points[i]->Paint(painter);
+    }
 }
 
 void Canvas::mousePressEvent(QMouseEvent *event) {
-    QPointF point = screenToCanvas(event->position());
-    qDebug() << point;
+    Point *point = new Point(screenToCanvas(event->position()));
+    qDebug() << point->positiom;
     points.append(point);
     update();
     QWidget::mousePressEvent(event);

@@ -2,6 +2,12 @@
 #define CANVAS_H
 
 #include <QWidget>
+#include <QPointF>
+#include <QString>
+#include <QVector>
+#include <QPainter>
+
+class QPainter;
 
 class Canvas : public QWidget
 {
@@ -11,29 +17,40 @@ private:
         QString label;
         explicit Object(const QString &label = QString()) : label(label) {}
         virtual ~Object() = default;
+        virtual void Paint(QPainter &) { qDebug() << "Object::Paint"; }
     };
     struct Point : public Object {
         QPointF positiom;
         Point() = default;
-        Point(const QPointF &point, const QString &label) : Object(label), positiom(point) {}
+        Point(const QPointF &point, const QString &label = "") : Object(label), positiom(point) {}
+        void Paint(QPainter &painter) override {
+            qDebug() << "Point::Paint";
+            QPointF mapped = CanvasToScreen(positiom);
+            painter.setBrush(Qt::red);
+            painter.setPen(QPen(Qt::red, 2));
+            painter.drawEllipse(mapped, 4, 4);
+        }
     };
     struct Line : public Object {
         int a = -1;
         int b = -1;
         Line() = default;
         Line(int a, int b, const QString &label) : Object(label), a(a), b(b) {}
+        void Paint(QPainter &) override { qDebug() << "Line::Paint";}
     };
     struct ExtendedLine : public Object {
         QPointF a;
         QPointF b;
         ExtendedLine() = default;
         ExtendedLine(const QPointF &a, const QPointF &b, const QString &label) : Object(label), a(a), b(b) {}
+        void Paint(QPainter &) override { qDebug() << "ExtendedLine::Paint";}
     };
     struct Circle : public Object {
         QPointF center;
         double radius = 0.0;
         Circle() = default;
         Circle(const QPointF &center, double radius, const QString &label = QString()) : Object(label), center(center), radius(radius) {}
+        void Paint(QPainter &) override {qDebug() << "Circle::Paint";}
     };
 public:
     explicit Canvas(QWidget *parent = nullptr);
@@ -42,16 +59,16 @@ protected:
     void mousePressEvent(QMouseEvent *event) override;
     void resizeEvent(QResizeEvent *event) override;
 private:
-    double scale;
-    QPointF origin;
+    static double scale;
+    static QPointF origin;
     void updateTransform();
 
-    QVector<QPointF> points;
+    QVector<Object *> points;
 
-    QPointF CanvasToScreen(const QPointF &point){
+    static QPointF CanvasToScreen(const QPointF &point){
         return QPointF(origin.x() + point.x() * scale, origin.y() - point.y() * scale);
     };
-    QPointF screenToCanvas(const QPointF &point){
+    static QPointF screenToCanvas(const QPointF &point){
         return QPointF((point.x() - origin.x()) / scale, -(point.y() - origin.y()) / scale);
     };
 
