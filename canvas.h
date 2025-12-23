@@ -14,9 +14,9 @@ class Canvas : public QWidget
     Q_OBJECT
 private:
     struct Object {
-        bool select;
+        bool selected;
         QString label;
-        explicit Object(bool select, const QString &label = QString()) : select(select), label(label) {}
+        explicit Object(bool selected, const QString &label = QString()) : selected(selected), label(label) {}
         virtual ~Object() = default;
         virtual void Paint(QPainter &) { qDebug() << "Object::Paint"; }
     };
@@ -24,29 +24,29 @@ private:
         QPointF positiom;
         Point(const QPointF &point, bool select, const QString &label = "") : Object(select, label), positiom(point) {}
         void Paint(QPainter &painter) override {
-            qDebug() << "Point::Paint";
+            const double radiusPixels = 4.0;
             QPointF mapped = CanvasToScreen(positiom);
-            painter.setBrush(Qt::red);
-            painter.setPen(QPen(Qt::red, 2));
-            painter.drawEllipse(mapped, 4, 4);
+            painter.setBrush(selected ? Qt::yellow : Qt::red);
+            painter.setPen(QPen(selected ? Qt::darkYellow : Qt::red, selected ? 3 : 2));
+            painter.drawEllipse(mapped, selected ? radiusPixels + 2 : radiusPixels, selected ? radiusPixels + 2 : radiusPixels);
         }
     };
     struct Line : public Object {
         int a = -1;
         int b = -1;
-        Line(int a, int b, bool select, const QString &label) : Object(select, label), a(a), b(b) {}
+        Line(int a, int b, bool selected, const QString &label) : Object(selected, label), a(a), b(b) {}
         void Paint(QPainter &) override { qDebug() << "Line::Paint";}
     };
     struct ExtendedLine : public Object {
         QPointF a;
         QPointF b;
-        ExtendedLine(const QPointF &a, const QPointF &b, bool select, const QString &label) : Object(select, label), a(a), b(b) {}
+        ExtendedLine(const QPointF &a, const QPointF &b, bool selected, const QString &label) : Object(selected, label), a(a), b(b) {}
         void Paint(QPainter &) override { qDebug() << "ExtendedLine::Paint";}
     };
     struct Circle : public Object {
         QPointF center;
         double radius = 0.0;
-        Circle(const QPointF &center, double radius, bool select, const QString &label = QString()) : Object(select, label), center(center), radius(radius) {}
+        Circle(const QPointF &center, double radius, bool selected, const QString &label = QString()) : Object(selected, label), center(center), radius(radius) {}
         void Paint(QPainter &) override {qDebug() << "Circle::Paint";}
     };
 public:

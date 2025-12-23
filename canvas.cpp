@@ -46,7 +46,6 @@ void Canvas::mousePressEvent(QMouseEvent *event) {
     }
     else if (shift){
         Point *point = new Point(screenToCanvas(event->position()), true);
-        qDebug() << point->positiom;
         points.append(point);
         update();
     }
