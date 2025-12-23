@@ -1,21 +1,18 @@
 #include <QMouseEvent>
+#include <QPainter>
 #include "canvas.h"
 
-Canvas::Canvas(QWidget *parent)
-    : QWidget{parent}
-{
+Canvas::Canvas(QWidget *parent) : QWidget{parent}{
     setAttribute(Qt::WA_StyledBackground, true);
     updateTransform();
 }
 
-void Canvas::resizeEvent(QResizeEvent *event)
-{
+void Canvas::resizeEvent(QResizeEvent *event){
     updateTransform();
     QWidget::resizeEvent(event);
 }
 
-void Canvas::updateTransform()
-{
+void Canvas::updateTransform(){
     const int padding = 16;
     QRectF area = rect().adjusted(padding, padding, -padding, -padding);
     const double span = 10.0;
@@ -30,8 +27,18 @@ void Canvas::updateTransform()
 
 void Canvas::paintEvent(QPaintEvent *event) {
     QWidget::paintEvent(event);
-    qDebug() << "paint";
 
+    QPainter painter(this);
+    painter.setRenderHint(QPainter::Antialiasing, true);
+
+    const double radiusPixels = 4.0;
+    for (int i = 0; i < points.size(); ++i) {
+        const auto &entry = points[i];
+        QPointF mapped = CanvasToScreen(entry);
+        painter.setBrush(Qt::red);
+        painter.setPen(QPen(Qt::red, 2));
+        painter.drawEllipse(mapped, radiusPixels, radiusPixels);
+        }
 }
 
 void Canvas::mousePressEvent(QMouseEvent *event) {
