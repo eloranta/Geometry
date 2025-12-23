@@ -14,15 +14,16 @@ class Canvas : public QWidget
     Q_OBJECT
 private:
     struct Object {
+        bool select;
         QString label;
-        explicit Object(const QString &label = QString()) : label(label) {}
+        explicit Object(bool select, const QString &label = QString()) : select(select), label(label) {}
         virtual ~Object() = default;
         virtual void Paint(QPainter &) { qDebug() << "Object::Paint"; }
     };
     struct Point : public Object {
         QPointF positiom;
         Point() = default;
-        Point(const QPointF &point, const QString &label = "") : Object(label), positiom(point) {}
+        Point(const QPointF &point, bool select, const QString &label = "") : Object(select, label), positiom(point) {}
         void Paint(QPainter &painter) override {
             qDebug() << "Point::Paint";
             QPointF mapped = CanvasToScreen(positiom);
@@ -35,21 +36,21 @@ private:
         int a = -1;
         int b = -1;
         Line() = default;
-        Line(int a, int b, const QString &label) : Object(label), a(a), b(b) {}
+        Line(int a, int b, bool select, const QString &label) : Object(select, label), a(a), b(b) {}
         void Paint(QPainter &) override { qDebug() << "Line::Paint";}
     };
     struct ExtendedLine : public Object {
         QPointF a;
         QPointF b;
         ExtendedLine() = default;
-        ExtendedLine(const QPointF &a, const QPointF &b, const QString &label) : Object(label), a(a), b(b) {}
+        ExtendedLine(const QPointF &a, const QPointF &b, bool select, const QString &label) : Object(select, label), a(a), b(b) {}
         void Paint(QPainter &) override { qDebug() << "ExtendedLine::Paint";}
     };
     struct Circle : public Object {
         QPointF center;
         double radius = 0.0;
         Circle() = default;
-        Circle(const QPointF &center, double radius, const QString &label = QString()) : Object(label), center(center), radius(radius) {}
+        Circle(const QPointF &center, double radius, bool select, const QString &label = QString()) : Object(select, label), center(center), radius(radius) {}
         void Paint(QPainter &) override {qDebug() << "Circle::Paint";}
     };
 public:

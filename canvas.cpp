@@ -39,7 +39,7 @@ void Canvas::paintEvent(QPaintEvent *event) {
 }
 
 void Canvas::mousePressEvent(QMouseEvent *event) {
-    Point *point = new Point(screenToCanvas(event->position()));
+    Point *point = new Point(screenToCanvas(event->position()), true);
     qDebug() << point->positiom;
     points.append(point);
     update();
