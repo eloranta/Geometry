@@ -4,8 +4,9 @@
 #include <QWidget>
 #include <QPointF>
 #include <QString>
-#include <QVector>
 #include <QPainter>
+#include <memory>
+#include <vector>
 
 class QPainter;
 
@@ -51,6 +52,8 @@ private:
     };
 public:
     explicit Canvas(QWidget *parent = nullptr);
+    void onDelete();
+    void onDeleteAll();
 protected:
     void paintEvent(QPaintEvent *event) override;
     void mousePressEvent(QMouseEvent *event) override;
@@ -60,7 +63,7 @@ private:
     static QPointF origin;
     void updateTransform();
 
-    QVector<Object *> objects;
+    std::vector<std::unique_ptr<Object>> objects;
 
     static QPointF canvasToScreen(const QPointF &point){
         return QPointF(origin.x() + point.x() * scale, origin.y() - point.y() * scale);

@@ -1,4 +1,5 @@
 #include <QMouseEvent>
+#include <memory>
 #include "canvas.h"
 
 double Canvas::scale;
@@ -45,7 +46,7 @@ int Canvas::getHitPoint(QMouseEvent *event)
     const double tolerancePx = 8.0;
     const double tol2 = tolerancePx * tolerancePx;
     for (int i = 0; i < objects.size(); ++i) {
-        QPointF screen = canvasToScreen(((Point *)objects[i])->position); // TODO:
+        QPointF screen = canvasToScreen(static_cast<Point *>(objects[i].get())->position); // TODO:
         double dx = screen.x() - event->position().x();
         double dy = screen.y() - event->position().y();
         double d2 = dx * dx + dy * dy;
@@ -67,8 +68,7 @@ void Canvas::mousePressEvent(QMouseEvent *event) {
     if (shift && ctrl) {
         if (hitPoint >= 0)
             return;
-        Point *point = new Point(screenToCanvas(event->position()), true);
-        objects.append(point);
+        objects.push_back(std::make_unique<Point>(screenToCanvas(event->position()), true));
         update();
     }
     else if (shift){
@@ -77,8 +77,7 @@ void Canvas::mousePressEvent(QMouseEvent *event) {
         for (int i = 0; i < objects.size(); ++i) {
             objects[i]->selected = false;
         }
-        Point *point = new Point(screenToCanvas(event->position()), true);
-        objects.append(point);
+        objects.push_back(std::make_unique<Point>(screenToCanvas(event->position()), true));
         update();
     }
     else if (ctrl) {
@@ -106,4 +105,13 @@ void Canvas::mousePressEvent(QMouseEvent *event) {
     }
 
     QWidget::mousePressEvent(event);
+}
+
+void Canvas::onDelete(){
+    qDebug() << "onDelete";
+}
+
+void Canvas::onDeleteAll(){
+    qDebug() << "onDeleteAll";
+
 }

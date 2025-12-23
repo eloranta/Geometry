@@ -17,11 +17,9 @@ MainWindow::~MainWindow()
 }
 
 void MainWindow::onDeleteClicked() {
-    qDebug() << "onDeleteClicked";
+    ui->canvas->onDelete();
 }
 
 void MainWindow::onDeleteAllClicked() {
-    // canvas_->deleteAll();
-    qDebug() << "onDeleteAllClicked";
-
+    ui->canvas->onDeleteAll();
 }
