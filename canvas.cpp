@@ -39,9 +39,23 @@ void Canvas::paintEvent(QPaintEvent *event) {
 }
 
 void Canvas::mousePressEvent(QMouseEvent *event) {
-    Point *point = new Point(screenToCanvas(event->position()), true);
-    qDebug() << point->positiom;
-    points.append(point);
-    update();
+    bool ctrl = event->modifiers().testFlag(Qt::ControlModifier);
+    bool shift = event->modifiers().testFlag(Qt::ShiftModifier);
+
+    if (shift && ctrl){
+    }
+    else if (shift){
+        Point *point = new Point(screenToCanvas(event->position()), true);
+        qDebug() << point->positiom;
+        points.append(point);
+        update();
+    }
+    else if (ctrl){
+
+    }
+    else{
+
+    }
+
     QWidget::mousePressEvent(event);
 }

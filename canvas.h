@@ -22,7 +22,6 @@ private:
     };
     struct Point : public Object {
         QPointF positiom;
-        Point() = default;
         Point(const QPointF &point, bool select, const QString &label = "") : Object(select, label), positiom(point) {}
         void Paint(QPainter &painter) override {
             qDebug() << "Point::Paint";
@@ -35,21 +34,18 @@ private:
     struct Line : public Object {
         int a = -1;
         int b = -1;
-        Line() = default;
         Line(int a, int b, bool select, const QString &label) : Object(select, label), a(a), b(b) {}
         void Paint(QPainter &) override { qDebug() << "Line::Paint";}
     };
     struct ExtendedLine : public Object {
         QPointF a;
         QPointF b;
-        ExtendedLine() = default;
         ExtendedLine(const QPointF &a, const QPointF &b, bool select, const QString &label) : Object(select, label), a(a), b(b) {}
         void Paint(QPainter &) override { qDebug() << "ExtendedLine::Paint";}
     };
     struct Circle : public Object {
         QPointF center;
         double radius = 0.0;
-        Circle() = default;
         Circle(const QPointF &center, double radius, bool select, const QString &label = QString()) : Object(select, label), center(center), radius(radius) {}
         void Paint(QPainter &) override {qDebug() << "Circle::Paint";}
     };
